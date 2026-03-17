@@ -1,6 +1,6 @@
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
-  console.log("ENV:", process.env.MONGO_URI);
+
 }
 
 const app = require("./app");
@@ -12,4 +12,5 @@ connectDB();
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
+  
 });
