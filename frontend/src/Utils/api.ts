@@ -4,18 +4,29 @@ export const api = async (
   endpoint: string,
   options: RequestInit = {}
 ) => {
+  const token = localStorage.getItem("token");
+
   const res = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
       ...(options.headers || {})
-    },
-    ...options
+    }
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Error en la petición");
-  }
+  const text = await res.text();
 
-  return res.json();
+  try {
+    const data = JSON.parse(text);
+
+    if (!res.ok) {
+      throw new Error(data.message || "Error en la petición");
+    }
+
+    return data;
+  } catch {
+    console.error("Respuesta no JSON:", text);
+    throw new Error("Error del servidor");
+  }
 };

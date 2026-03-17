@@ -202,7 +202,7 @@ const payCreditCard = async (req, res) => {
 const getUserCards = async (req, res, next) => {
   try {
 
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const cards = await cardService.getUserCards(userId);
 
