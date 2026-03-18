@@ -36,7 +36,9 @@ const requestCard = async (userId, type, accountId) => {
 
 const getUserCards = async (userId) => {
 
-  const cards = await Card.find({ user: userId });
+  const cards = await Card.find({
+    user: new mongoose.Types.ObjectId(userId)
+  });
 
   return cards.map(card => ({
     id: card._id,

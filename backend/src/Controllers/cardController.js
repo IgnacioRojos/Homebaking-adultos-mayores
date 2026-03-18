@@ -1,4 +1,5 @@
 const cardService = require("../Services/cardService");
+const Card = require("../models/Card")
 
 const requestCard = async (req, res) => {
   try {
@@ -201,14 +202,20 @@ const payCreditCard = async (req, res) => {
 
 const getUserCards = async (req, res, next) => {
   try {
+    const mongoose = require("mongoose");
 
-    const userId = req.user._id;
+    const allCards = await Card.find({});
 
-    const cards = await cardService.getUserCards(userId);
+
+    const cards = await Card.find({
+      user: new mongoose.Types.ObjectId(req.user.id)
+    });
+
 
     res.json(cards);
 
   } catch (error) {
+    console.error(error);
     next(error);
   }
 };

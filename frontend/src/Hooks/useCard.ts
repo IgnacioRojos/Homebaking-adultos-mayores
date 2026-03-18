@@ -8,6 +8,7 @@ export const useCards = () => {
     const fetchCards = async () => {
       try {
         const data = await api("/api/card");
+        console.log("CARDS:", data);
         setCards(data);
       } catch (error) {
         console.error(error);
