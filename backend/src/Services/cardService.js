@@ -67,11 +67,24 @@ const getCardDetails = async (cardId, userId) => {
 
   const cvv = Math.floor(100 + Math.random() * 900);
 
+
+  const balanceData = await getCardBalance(cardId, userId);
+
+   
+  const dates = await getClosingDates(cardId, userId);
+
   return {
     number: fakeNumber,
     cvv,
-    expirationDate: card.expirationDate,
-    type: card.type
+    type: card.type,
+    status: card.status,
+
+    // balance
+    ...balanceData,
+
+    // fechas
+    closingDate: dates.closingDate,
+    dueDate: dates.dueDate
   };
 };
 
