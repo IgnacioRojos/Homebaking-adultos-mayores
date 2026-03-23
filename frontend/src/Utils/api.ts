@@ -13,7 +13,9 @@ export const api = async (
       ...(token && { Authorization: `Bearer ${token}` }),
       ...(options.headers || {})
     }
+   
   });
+  console.log("API_URL:", API_URL);
 
   const text = await res.text();
 

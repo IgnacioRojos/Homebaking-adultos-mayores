@@ -61,7 +61,10 @@ const getCardDetails = async (cardId, userId) => {
 
   if (!card) throw new Error("Tarjeta no encontrada");
 
-  const fakeNumber = "4500 1234 5678 " + card.lastFourDigits;
+  const lastFour = card.cardNumber.slice(-4);
+
+  const fakeNumber = "4500 1234 5678 " + lastFour;
+
   const cvv = Math.floor(100 + Math.random() * 900);
 
   return {
