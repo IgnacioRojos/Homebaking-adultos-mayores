@@ -49,7 +49,7 @@ const getUserCards = async (userId) => {
 
 
 // ===============================
-// VER DATOS DE TARJETA
+// VER DETALLES DE TARJETA
 // ===============================
 
 const getCardDetails = async (cardId, userId) => {
@@ -69,9 +69,11 @@ const getCardDetails = async (cardId, userId) => {
 
 
   const balanceData = await getCardBalance(cardId, userId);
-
-   
   const dates = await getClosingDates(cardId, userId);
+
+  const movements = await getMovements(cardId);
+  const lastPayment = await getLastPayment(cardId);
+  const debtData = await getAmountToPay(cardId);
 
   return {
     number: fakeNumber,
@@ -84,7 +86,13 @@ const getCardDetails = async (cardId, userId) => {
 
     // fechas
     closingDate: dates.closingDate,
-    dueDate: dates.dueDate
+    dueDate: dates.dueDate,
+
+    movements,
+    lastPayment,
+    totalPurchases: debtData.totalPurchases,
+    totalPayments: debtData.totalPayments,
+    amountToPay: debtData.amountToPay
   };
 };
 

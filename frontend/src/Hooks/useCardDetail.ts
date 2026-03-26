@@ -4,49 +4,37 @@ import { api } from "../Utils/api";
 export const useCardDetail = (_id: string | undefined) => { // Acepta undefined
   const [detail, setDetail] = useState<any>(null);
   const [loading, setLoading] = useState(false); // Tip: agrega un estado de carga
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Si _id no existe o es el string "undefined", no hagas nada
-    if (!_id || _id === "undefined") return;
 
     const fetchDetail = async () => {
-      setLoading(true);
-      try {
-        const data = await api(`/card/${_id}/details`);
-        if (Array.isArray(data) && data.length > 0) {
-          setDetail(data[0]);
-        } else {
-          setDetail(data);
-        }
-      } catch (error) {
-        console.error("Error cargando detalle:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!_id) return;
 
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await api(`/card/${_id}/details`);
+      setDetail(data);
+    } catch (err) {
+      console.error("Error cargando detalle:", err);
+      setError("No se pudo cargar la tarjeta");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchDetail();
   }, [_id]);
 
-  return { detail, loading };
+  return {
+    detail,
+    loading,
+    error,
+    refetch: fetchDetail // 🔥 clave para acciones
+  };
 };
 
 
 
-/*import { useEffect, useState } from "react";
-import { api } from "../Utils/api";
-
-export const useCardDetail = (_id: string) => {
-  const [detail, setDetail] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchDetail = async () => {
-      const data = await api(`/card/${_id}/details`);
-      setDetail(data);
-    };
-
-    fetchDetail();
-  }, [_id]);
-
-  return { detail };
-};*/
