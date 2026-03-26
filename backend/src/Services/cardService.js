@@ -335,7 +335,7 @@ const payCreditCard = async (cardId, userId, amount) => {
 
   if (!card) throw new Error("Tarjeta no encontrada");
 
-  if (card.type !== "CREDIT") {
+  if (card.type !== "credit") {
     throw new Error("Solo se pueden pagar tarjetas de crédito");
   }
 
