@@ -1,18 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "../Utils/api";
 
 export const useCards = () => {
-  const [cards, setCards] = useState([]);
+  const [cards, setCards] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
       const data = await api("/card");
-      console.log("CARDS:", data);
       setCards(data);
-    };
-
-    fetchCards();
+    } catch (err) {
+      console.error(err);
+      setError("Error cargando tarjetas");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { cards };
+  useEffect(() => {
+    fetchCards();
+  }, [fetchCards]);
+
+  return {
+    cards,
+    loading,
+    error,
+    refetch: fetchCards // 🔥 ACÁ ESTÁ LA CLAVE
+  };
 };

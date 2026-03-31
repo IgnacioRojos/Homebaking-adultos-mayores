@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 interface AuthContextType {
   token: string | null;
+  loading: boolean;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -10,6 +11,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: any) => {
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // cargar token al iniciar la app
   useEffect(() => {
@@ -17,6 +19,7 @@ export const AuthProvider = ({ children }: any) => {
     if (storedToken) {
       setToken(storedToken);
     }
+    setLoading(false);
   }, []);
 
   const login = (token: string) => {
@@ -30,7 +33,7 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -29,20 +29,34 @@ const getAccountById = async (req, res) => {
 
 const createSavingsAccount = async (req, res) => {
   try {
-    const { alias } = req.body;
+    const account = await accountService.createSavingsAccount(
+      req.user.id
+    );
 
-    if (!alias) {
+    res.status(201).json(account);
+  } catch (error) {
+    if (error.code === 11000) {
       return res.status(400).json({
-        message: "El alias es obligatorio"
+        message: "Error generando alias"
       });
     }
 
-    const account = await accountService.createSavingsAccount(
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+
+const updateAlias = async (req, res) => {
+  try {
+    const { alias } = req.body;
+
+    const account = await accountService.updateAlias(
+      req.params.id,
       req.user.id,
       alias
     );
 
-    res.status(201).json(account);
+    res.json(account);
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
@@ -50,7 +64,9 @@ const createSavingsAccount = async (req, res) => {
       });
     }
 
-    res.status(500).json({ message: "Error del servidor" });
+    res.status(400).json({
+      message: error.message || "Error al actualizar alias"
+    });
   }
 };
 
@@ -149,5 +165,6 @@ module.exports = {
   updateAccount,
   deleteAccount,
   getPrimaryAccount,
-  createSavingsAccount
+  createSavingsAccount,
+  updateAlias
 };

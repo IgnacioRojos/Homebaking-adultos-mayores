@@ -27,4 +27,7 @@ router.put("/:id",authMiddleware,accountController.updateAccount);
 /* Soft delete */
 router.delete("/:id",authMiddleware,accountController.deleteAccount);
 
+/*Actualizar alias*/
+router.patch("/:id/alias", authMiddleware, accountController.updateAlias);
+
 module.exports = router;

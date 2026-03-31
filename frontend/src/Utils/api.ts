@@ -15,7 +15,7 @@ export const api = async (
     }
    
   });
-  console.log("API_URL:", API_URL);
+
 
   const text = await res.text();
 

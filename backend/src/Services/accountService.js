@@ -55,13 +55,24 @@ const generateCBU = () => {
   return Math.floor(1000000000000000000000 + Math.random() * 9000000000000000000000).toString();
 };
 
-const createSavingsAccount = async (userId, alias) => {
+const createSavingsAccount = async (userId) => {
   const activeAccounts = await Account.find({
     user: userId,
     isActive: true
   });
 
   const isFirstAccount = activeAccounts.length === 0;
+
+ 
+  let alias;
+  let exists = true;
+
+  while (exists) {
+    alias = `usuario.${Math.floor(Math.random() * 10000)}`;
+
+    const found = await Account.findOne({ alias });
+    if (!found) exists = false;
+  }
 
   const newAccount = new Account({
     user: userId,
@@ -75,6 +86,33 @@ const createSavingsAccount = async (userId, alias) => {
   await newAccount.save();
 
   return newAccount;
+};
+
+
+const updateAlias = async (accountId, userId, newAlias) => {
+  if (!newAlias || newAlias.length < 3) {
+    throw new Error("Alias inválido");
+  }
+
+
+  const existing = await Account.findOne({ alias: newAlias });
+  if (existing) {
+    const error = new Error("El alias ya está en uso");
+    error.code = 11000;
+    throw error;
+  }
+
+  const account = await Account.findOneAndUpdate(
+    { _id: accountId, user: userId }, 
+    { alias: newAlias },
+    { new: true }
+  );
+
+  if (!account) {
+    throw new Error("Cuenta no encontrada");
+  }
+
+  return account;
 };
 
 const getLastMovements = async (accountId, userId) => {
@@ -159,5 +197,6 @@ module.exports = {
   updateAccount,
   deleteAccount,
   getPrimaryAccount,
-  createSavingsAccount
+  createSavingsAccount,
+  updateAlias
 };
