@@ -9,6 +9,8 @@ import AccountDetailPage from "./Pages/accounts/AccountsDetailsPage";
 
 import DashboardPage from "./Pages/dashboard/DashboardPage";
 
+import ProfilePage from "./Pages/profile/ProfilePage";
+
 import PrivateRoute from "./Routes/PrivateRoute";
 import Login from "./Pages/login/LoginPage";
 
@@ -75,6 +77,17 @@ function App() {
               <AccountDetailPage />
             </PrivateRoute>
           }
+        />
+
+
+        <Route 
+          path="/profile" 
+          element={
+            <PrivateRoute>
+              <ProfilePage />
+            </PrivateRoute>
+          } 
+            
         />
 
         {/* ===============================

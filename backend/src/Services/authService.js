@@ -65,7 +65,44 @@ const register = async ({ fullName, dni, email, password }) => {
   };
 };
 
+
+const getUserById = async (userId) => {
+  const user = await User.findById(userId).select("-password");
+
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return user;
+};
+
+const updateUserEmail = async (userId, email) => {
+  if (!email) {
+    throw new Error("Email requerido");
+  }
+
+  if (!email.includes("@")) {
+    throw new Error("Email inválido");
+  }
+
+  const existing = await User.findOne({ email });
+
+  if (existing && existing._id.toString() !== userId) {
+    throw new Error("El email ya está en uso");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { email },
+    { new: true }
+  ).select("-password");
+
+  return updatedUser;
+};
+
 module.exports = {
   login,
-  register
+  register,
+  getUserById,
+  updateUserEmail
 };

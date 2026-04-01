@@ -52,7 +52,35 @@ const register = async (req, res) => {
   }
 };
 
+
+const getMe = async (req, res) => {
+  try {
+    const user = await getUserById(req.userId);
+    res.json(user);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+
+const updateEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const updatedUser = await updateUserEmail(req.userId, email);
+
+    res.json({
+      message: "Email actualizado correctamente",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   login,
-  register
+  register,
+  getMe,
+  updateEmail
 };
