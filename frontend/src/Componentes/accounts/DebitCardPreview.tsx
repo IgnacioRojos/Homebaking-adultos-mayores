@@ -18,9 +18,9 @@ const DebitCardPreview = ({ card }: Props) => {
   const lastFour = card.cardNumber?.slice(-4);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow">
+    <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
 
-      <p className="text-gray-500">Tarjeta de débito</p>
+      <p className="text-white">Tarjeta de débito</p>
 
       <h2 className="text-xl font-bold mt-2">
         **** {lastFour}
@@ -28,9 +28,9 @@ const DebitCardPreview = ({ card }: Props) => {
 
       <button 
         onClick={() => navigate("/cards")}
-        className="mt-4 text-blue-600"
+        className="bg-white/20 backdrop-blur-sm text-white text-s font-semibold px-3 py-1 rounded-full border border-white/30"
       >
-        Ver detalle
+        Ver Tarjetas
       </button>
 
     </div>

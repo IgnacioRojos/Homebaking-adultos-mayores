@@ -3,6 +3,7 @@ import { useAccountDetail } from "../../Hooks/useAccountsDetails";
 import { api } from "../../Utils/api";
 import ButtomNavBar from "../../Componentes/layouts/ButtomNavBar";
 import BottomNav from "../../Componentes/layouts/ButtomNav";
+import { useState, useRef, useEffect } from "react";
 
 const AccountDetailPage = () => {
   const { id } = useParams();
@@ -10,6 +11,32 @@ const AccountDetailPage = () => {
 
   const { detail, loading, refetch } = useAccountDetail(id);
 
+  const [showModal, setShowModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // ===============================
+  // CLICK OUTSIDE
+  // ===============================
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setShowModal(false);
+      }
+    };
+
+    if (showModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showModal]);
+
+  // ===============================
+  // FORMATTERS
+  // ===============================
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -20,36 +47,46 @@ const AccountDetailPage = () => {
   const formatDate = (date: string) =>
     new Intl.DateTimeFormat("es-AR").format(new Date(date));
 
-  // ===============================
-  // ACCIONES
-  // ===============================
+  const getAccountName = (type: string) => {
+    switch (type) {
+      case "caja_ahorro":
+        return "Caja de ahorro";
+      default:
+        return "Cuenta";
+    }
+  };
 
+  // ===============================
+  // ACTIONS
+  // ===============================
   const handleMakePrimary = async () => {
     await api(`/accounts/${id}`, {
-      method: "PATCH",
+      method: "PUT",
       body: JSON.stringify({ isPrimary: true })
     });
 
-    alert("Cuenta principal actualizada");
     refetch();
   };
 
   const handleDelete = async () => {
-    const confirmDelete = confirm("¿Eliminar cuenta?");
-    if (!confirmDelete) return;
+    try {
+      setDeleting(true);
 
-    await api(`/accounts/${id}`, {
-      method: "DELETE"
-    });
+      await api(`/accounts/${id}`, {
+        method: "DELETE"
+      });
 
-    alert("Cuenta eliminada");
-    navigate("/accounts");
+      navigate("/accounts", {
+        state: { deleted: true }
+      });
+    } catch {
+      setDeleting(false);
+    }
   };
 
   // ===============================
-  // UI STATES
+  // STATES
   // ===============================
-
   if (loading)
     return <p className="p-4 text-secondary-text">Cargando...</p>;
 
@@ -59,50 +96,75 @@ const AccountDetailPage = () => {
   // ===============================
   // RENDER
   // ===============================
-
   return (
-    <div className="bg-main min-h-screen p-4 md:p-6 pb-20">
+    <div className="bg-main min-h-screen p-4 pb-20">
       <ButtomNavBar />
 
       <div className="max-w-3xl mx-auto space-y-4 mt-4">
 
-        {/* HEADER */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm space-y-2">
-          <h1 className="text-xl font-bold text-primary">
-            {detail.alias}
-          </h1>
+        {/* HEADER CARD */}
+        <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
 
-          <p className="text-sm text-secondary-text">
-            CBU: {detail.cbu}
-          </p>
+          <div className="flex justify-between items-start">
 
-          {detail.isPrimary && (
-            <p className="text-green-500 font-medium">
-              Cuenta principal
-            </p>
-          )}
+            <div>
+              <h1 className="text-xl font-bold">
+                {getAccountName(detail.type)}
+              </h1>
+
+              <p className="text-sm opacity-80">
+                Alias: {detail.alias}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-2 items-end">
+
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                detail.isActive
+                  ? "bg-white/20"
+                  : "bg-red-500"
+              }`}>
+                {detail.isActive ? "Activa" : "Inactiva"}
+              </span>
+
+              {detail.isPrimary && (
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/20">
+                  Principal
+                </span>
+              )}
+
+            </div>
+
+          </div>
+
+          <div className="pt-2">
+            <p className="text-xs opacity-70">CBU</p>
+            <p className="text-sm tracking-wider">{detail.cbu}</p>
+          </div>
+
         </div>
 
         {/* BALANCE */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm space-y-2">
-          <h2 className="font-semibold text-primary">
-            Saldo disponible
-          </h2>
+        <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
 
-          <p className="text-2xl font-bold text-primary">
+          <p className="text-sm text-white">
+            Saldo disponible
+          </p>
+
+          <p className="text-3xl font-bold text-white mt-1">
             {formatCurrency(detail.balance)}
           </p>
+
         </div>
 
         {/* MOVIMIENTOS */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm">
-          <h2 className="font-semibold text-primary mb-3">
+        <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
+          <h2 className="font-semibold text-white mb-3">
             Movimientos
           </h2>
 
           {detail.movements?.length > 0 ? (
             <div className="space-y-2">
-
               {detail.movements.map((mov: any) => (
                 <div
                   key={mov._id}
@@ -122,10 +184,9 @@ const AccountDetailPage = () => {
                   </p>
                 </div>
               ))}
-
             </div>
           ) : (
-            <p className="text-secondary-text text-sm">
+            <p className="text-white text-sm">
               No hay movimientos
             </p>
           )}
@@ -137,15 +198,15 @@ const AccountDetailPage = () => {
           {!detail.isPrimary && (
             <button
               onClick={handleMakePrimary}
-              className="bg-blue-500 text-white py-2 rounded-lg text-sm font-medium"
+              className="px-4 py-2 rounded-lg bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
             >
-              Hacer principal
+              Convertir en cuenta principal
             </button>
           )}
 
           <button
-            onClick={handleDelete}
-            className="bg-red-500 text-white py-2 rounded-lg text-sm font-medium"
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 rounded-lg text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30 bg-red-500 hover:bg-red-600 transition"
           >
             Eliminar cuenta
           </button>
@@ -153,6 +214,43 @@ const AccountDetailPage = () => {
         </div>
 
       </div>
+
+      {/* MODAL */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+
+          <div
+            ref={modalRef}
+            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl space-y-4 animate-fadeIn"
+          >
+            <h2 className="text-lg font-semibold text-gray-800">
+              ¿Eliminar cuenta?
+            </h2>
+
+            <p className="text-sm text-gray-500">
+              Esta acción no se puede deshacer.
+            </p>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 py-2  border-gray-300 text-gray-700 font-medium bg-gray-100 transition rounded-full"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 bg-red-600 transition  backdrop-blur-sm text-white font-medium  px-3 py-1 rounded-full border border-white/30"
+              >
+                {deleting ? "Eliminando..." : "Eliminar"}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      )}
 
       <BottomNav />
     </div>

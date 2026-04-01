@@ -43,7 +43,7 @@ const Login = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
 
         <h1 className="text-2xl font-bold text-center mb-6">
-          Ingresar
+          Bienvenido a tu HomeBanking
         </h1>
         {/* DNI */}
         <div className="relative mb-4">

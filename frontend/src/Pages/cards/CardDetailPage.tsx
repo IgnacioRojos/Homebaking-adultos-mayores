@@ -3,18 +3,88 @@ import { useCardDetail } from "../../Hooks/useCardDetail";
 import { api } from "../../Utils/api";
 import ButtomNavBar from "../../Componentes/layouts/ButtomNavBar";
 import BottomNav from "../../Componentes/layouts/ButtomNav";
+import { useState, useRef, useEffect } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const CardDetailPage = () => {
   const { _id } = useParams();
   const navigate = useNavigate();
 
+  // MODALS
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEnableModal, setShowEnableModal] = useState(false);
+
+  const deleteModalRef = useRef<HTMLDivElement>(null);
+  const enableModalRef = useRef<HTMLDivElement>(null);
+
+  // STATES
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [loadingEnable, setLoadingEnable] = useState(false);
+  const [showSensitiveData, setShowSensitiveData] = useState(false);
+
   const { detail, loading, error, refetch, hasDebt, hasBalance } =
     useCardDetail(_id);
 
   // ===============================
+  // CLICK OUTSIDE (DELETE)
+  // ===============================
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        deleteModalRef.current &&
+        !deleteModalRef.current.contains(e.target as Node)
+      ) {
+        setShowDeleteModal(false);
+      }
+    };
+
+    if (showDeleteModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDeleteModal]);
+
+  // ===============================
+  // CLICK OUTSIDE (ENABLE)
+  // ===============================
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        enableModalRef.current &&
+        !enableModalRef.current.contains(e.target as Node)
+      ) {
+        setShowEnableModal(false);
+      }
+    };
+
+    if (showEnableModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEnableModal]);
+
+  // ===============================
+  // AUTO HIDE SENSITIVE DATA
+  // ===============================
+  useEffect(() => {
+    if (showSensitiveData) {
+      const timer = setTimeout(() => {
+        setShowSensitiveData(false);
+      }, 8000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showSensitiveData]);
+
+  // ===============================
   // FORMATTERS
   // ===============================
-
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -27,9 +97,47 @@ const CardDetailPage = () => {
     return new Intl.DateTimeFormat("es-AR").format(new Date(date));
   };
 
+  const formatExpiry = (date: string) => {
+    const d = new Date(date);
+    return `${(d.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${d.getFullYear().toString().slice(-2)}`;
+  };
+
   // ===============================
   // ACTIONS
   // ===============================
+  const handleEnable = async () => {
+    try {
+      setLoadingEnable(true);
+
+      await api(`/card/${_id}/enable`, {
+        method: "PATCH",
+      });
+
+      setShowEnableModal(false);
+      await refetch();
+    } catch {
+      setLoadingEnable(false);
+    } finally {
+      setLoadingEnable(false);
+    }
+  };
+
+  const handleDeactivate = async () => {
+    try {
+      setLoadingDelete(true);
+
+      await api(`/card/${_id}`, {
+        method: "DELETE",
+      });
+
+      setShowDeleteModal(false);
+      navigate("/cards");
+    } catch {
+      setLoadingDelete(false);
+    }
+  };
 
   const handlePay = async () => {
     const amount = prompt("Ingrese monto a pagar:");
@@ -48,50 +156,12 @@ const CardDetailPage = () => {
     }
   };
 
-  const handleEnable = async () => {
-    try {
-      await api(`/card/${_id}/enable`, {
-        method: "PATCH",
-      });
-
-      alert("Tarjeta activada");
-      refetch();
-    } catch {
-      alert("Error al activar");
-    }
-  };
-
-  const handleDeactivate = async () => {
-    const confirmDelete = confirm(
-      "¿Seguro que querés dar de baja la tarjeta?"
-    );
-    if (!confirmDelete) return;
-
-    try {
-      await api(`/card/${_id}`, {
-        method: "DELETE",
-      });
-
-      alert("Tarjeta dada de baja");
-      refetch();
-      navigate("/cards");
-    } catch {
-      alert("Error al dar de baja");
-    }
-  };
-
   // ===============================
   // UI STATES
   // ===============================
-
-  if (loading)
-    return <p className="p-4 text-secondary-text">Cargando...</p>;
-
-  if (error)
-    return <p className="p-4 text-red-500">{error}</p>;
-
-  if (!detail)
-    return <p className="p-4 text-secondary-text">No hay datos</p>;
+  if (loading) return <p className="p-4">Cargando...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
+  if (!detail) return <p className="p-4">No hay datos</p>;
 
   const isLimitExceeded =
     detail.type === "credit" && (detail.availableLimit ?? 0) <= 0;
@@ -99,42 +169,64 @@ const CardDetailPage = () => {
   // ===============================
   // RENDER
   // ===============================
-
   return (
-    <div className="bg-main min-h-screen p-4 md:p-6 pb-20">
+    <div className="bg-main min-h-screen p-4 pb-20">
       <ButtomNavBar />
 
       <div className="max-w-3xl mx-auto space-y-4 mt-4">
 
-        {/* HEADER */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm space-y-2">
-          <h1 className="text-xl font-bold text-primary">
-            Tarjeta **** {detail.number.slice(-4)}
-          </h1>
+        {/* CARD DATA */}
+        <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
 
-          <p className="text-secondary-text text-sm">
+          <div className="flex justify-between items-center">
+            <h2 className="font-semibold text-white">
+              Datos de la tarjeta
+            </h2>
+
+            <button onClick={() => setShowSensitiveData(prev => !prev)}>
+              {showSensitiveData ? <EyeOff /> : <Eye />}
+            </button>
+          </div>
+
+          <p>
+            Número:{" "}
+            {showSensitiveData
+              ? detail.number
+              : "**** **** **** " + detail.number.slice(-4)}
+          </p>
+
+          <p>
+            Vencimiento:{" "}
+            {showSensitiveData
+              ? formatExpiry(detail.closingDate)
+              : "**/**"}
+          </p>
+
+          <p>
+            CVV: {showSensitiveData ? detail.cvv : "***"}
+          </p>
+
+          <p className="text-sm text-white">
             {detail.type === "credit" ? "Crédito" : "Débito"}
           </p>
 
-          <p className="text-secondary-text text-sm">
-            Estado: {detail.status}
+          <p className="text-sm text-white">
+            Estado: {detail.status === "active" ? "Activa" : "Inactiva"}
           </p>
         </div>
 
         {/* INFO */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm space-y-2">
-          <h2 className="font-semibold text-primary">Información</h2>
+        <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
+          <h2 className="font-semibold">Información</h2>
 
           {detail.type === "credit" && (
             <>
-              <p>Límite: {formatCurrency(detail.creditLimit ?? 0)}</p>
-              <p>Disponible: {formatCurrency(detail.availableLimit ?? 0)}</p>
-              <p>Consumido: {formatCurrency(detail.consumed ?? 0)}</p>
+             <p>Límite: {formatCurrency(detail.creditLimit ?? 0)}</p>
+             <p>Disponible: {formatCurrency(detail.availableLimit ?? 0)}</p>
+             <p>Consumido: {formatCurrency(detail.consumed ?? 0)}</p>
 
               {isLimitExceeded && (
-                <p className="text-red-500 font-medium">
-                  Límite agotado
-                </p>
+                <p className="text-red-500">Límite agotado</p>
               )}
 
               <p>
@@ -148,90 +240,20 @@ const CardDetailPage = () => {
           {detail.type === "debit" && (
             <>
               <p>Saldo: {formatCurrency(detail.balance ?? 0)}</p>
-
               {!hasBalance && (
-                <p className="text-red-500 font-medium">
-                  Sin saldo disponible
-                </p>
+                <p className="text-red-500">Sin saldo</p>
               )}
             </>
           )}
         </div>
 
-        {/* MOVIMIENTOS */}
-        <div className="bg-card rounded-2xl p-5 shadow-sm">
-          <h2 className="font-semibold text-primary mb-3">
-            Movimientos
-          </h2>
-
-          {detail.movements?.length > 0 ? (
-            <div className="space-y-2">
-              {detail.movements.map((mov: any) => (
-                <div
-                  key={mov._id}
-                  className="flex justify-between items-center bg-main p-3 rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium text-primary">
-                      {mov.description || mov.type}
-                    </p>
-                    <p className="text-xs text-secondary-text">
-                      {formatDate(mov.date)}
-                    </p>
-                  </div>
-
-                  <p
-                    className={`font-semibold ${
-                      mov.type === "CARD_PURCHASE"
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {mov.type === "CARD_PURCHASE" ? "-" : "+"}
-                    {formatCurrency(mov.amount)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-secondary-text text-sm">
-              No hay movimientos
-            </p>
-          )}
-        </div>
-
-        {/* ÚLTIMO PAGO */}
-        {detail.type === "credit" && (
-          <div className="bg-card rounded-2xl p-5 shadow-sm">
-            <h2 className="font-semibold text-primary mb-2">
-              Último pago
-            </h2>
-
-            {detail.lastPayment ? (
-              <>
-                <p>
-                  Monto:{" "}
-                  {formatCurrency(detail.lastPayment.amount)}
-                </p>
-                <p className="text-sm text-secondary-text">
-                  {formatDate(detail.lastPayment.date)}
-                </p>
-              </>
-            ) : (
-              <p className="text-secondary-text text-sm">
-                No hay pagos registrados
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* ACCIONES */}
+        {/* ACTIONS */}
         <div className="bg-card rounded-2xl p-5 shadow-sm flex flex-col gap-3">
 
           {detail.type === "credit" && (
             <button
               onClick={handlePay}
-              className="bg-green-500 text-white py-2 rounded-lg text-sm font-medium"
+              className="px-4 py-2 rounded-lg bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
             >
               Pagar tarjeta
             </button>
@@ -239,22 +261,96 @@ const CardDetailPage = () => {
 
           {detail.status !== "active" && (
             <button
-              onClick={handleEnable}
-              className="bg-blue-500 text-white py-2 rounded-lg text-sm font-medium"
+              onClick={() => setShowEnableModal(true)}
+              className="px-4 py-2 rounded-lg bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
             >
               Activar tarjeta
             </button>
           )}
 
           <button
-            onClick={handleDeactivate}
-            className="bg-red-500 text-white py-2 rounded-lg text-sm font-medium"
+            onClick={() => setShowDeleteModal(true)}
+            className="px-4 py-2 rounded-lg bg-red-500  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
           >
             Dar de baja
           </button>
         </div>
 
       </div>
+
+      {/* DELETE MODAL */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+
+          <div
+            ref={deleteModalRef}
+            className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 space-y-4 animate-fadeIn"
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-lg font-semibold text-gray-800">
+                ¿Eliminar tarjeta?
+              </h2>
+              <p className="text-sm text-gray-500">
+                Esta acción no se puede deshacer.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-2  border-gray-300 text-gray-700 font-medium bg-gray-100 transition rounded-full"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={handleDeactivate}
+                className="flex-1 bg-red-600 transition  backdrop-blur-sm text-white font-medium  px-3 py-1 rounded-full border border-white/30"
+                disabled={loadingDelete}
+              >
+                {loadingDelete ? "Eliminando..." : "Eliminar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ENABLE MODAL */}
+      {showEnableModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+
+          <div
+            ref={enableModalRef}
+            className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 space-y-4 animate-fadeIn"
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-lg font-semibold text-gray-800">
+                ¿Activar tarjeta?
+              </h2>
+              <p className="text-sm text-gray-500">
+                Podrás usarla inmediatamente.
+              </p>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setShowEnableModal(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={handleEnable}
+                className="flex-1 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition disabled:opacity-50"
+                disabled={loadingEnable}
+              >
+                {loadingEnable ? "Activando..." : "Activar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </div>

@@ -12,31 +12,32 @@ const AccountCard = ({ account, onClick }: Props) => {
       minimumFractionDigits: 0
     }).format(value);
 
+
   return (
     <div
       onClick={onClick}
-      className="p-4 bg-white rounded-xl shadow cursor-pointer hover:bg-gray-50 transition"
+      className="bg-linear-to-br from-purple-500 to-indigo-500 rounded-2xl p-6 shadow-md space-y-3"
     >
       {/* Alias */}
-      <p className="font-semibold text-lg">
-        {account.alias}
+      <p className="font-semibold text-lg text-white">
+        {account.type === "caja_ahorro" && "Caja de ahorro"}
       </p>
 
       {/* Tipo */}
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-white">
         {account.type}
       </p>
 
       {/* Balance */}
-      <p className="mt-2 font-medium">
+      <p className="mt-2 font-medium text-white">
         {formatCurrency(account.balance ?? 0)}
       </p>
 
       {/* Cuenta principal */}
-      {account.isPrimary && (
-        <p className="text-green-600 text-sm mt-1">
-          Cuenta principal
-        </p>
+    {account.isPrimary && (
+      <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/30">
+        Principal
+      </span>
       )}
     </div>
   );

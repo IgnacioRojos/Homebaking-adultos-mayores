@@ -13,9 +13,23 @@ const CardsPage = () => {
   const [filter, setFilter] = useState("all");
   const [accountId, setAccountId] = useState<string | null>(null);
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [createdType, setCreatedType] = useState<"credit" | "debit" | null>(null);
+
   // ===============================
   // FETCH ACCOUNT
   // ===============================
+  useEffect(() => {
+    if (showSuccessModal || showErrorModal) {
+      const timer = setTimeout(() => {
+        setShowSuccessModal(false);
+        setShowErrorModal(false);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessModal, showErrorModal]);
 
   useEffect(() => {
     const fetchAccount = async () => {
@@ -46,7 +60,7 @@ const CardsPage = () => {
 
   const handleRequestCard = async (type: "credit" | "debit") => {
     if (!accountId) {
-      alert("Cuenta no disponible");
+      setShowErrorModal(true);
       return;
     }
 
@@ -59,10 +73,11 @@ const CardsPage = () => {
         }),
       });
 
-      alert(`Tarjeta de ${type} creada`);
+      setCreatedType(type);
+      setShowSuccessModal(true);
       refetch();
     } catch {
-      alert("Error al crear tarjeta");
+      setShowErrorModal(true);
     }
   };
 
@@ -147,24 +162,82 @@ const CardsPage = () => {
 
           <div className="flex gap-2">
 
+
             <button
               onClick={() => handleRequestCard("credit")}
-              className="flex-1 bg-blue-500 text-white py-2 rounded-lg text-sm font-medium"
+              className="flex-1 py-2 rounded-lg bg-linear-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold border border-white/30 backdrop-blur-sm hover:opacity-90 transition"
             >
               + Crédito
             </button>
 
             <button
               onClick={() => handleRequestCard("debit")}
-              className="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm font-medium"
+              className="flex-1 py-2 rounded-lg bg-linear-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold border border-white/30 backdrop-blur-sm hover:opacity-90 transition"
             >
               + Débito
             </button>
+      
 
           </div>
         </div>
 
       </div>
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+
+          <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 space-y-4 text-center animate-fadeIn">
+
+            <div className="w-14 h-14 mx-auto rounded-full bg-green-100 flex items-center justify-center">
+              <span className="text-green-600 text-2xl">✓</span>
+            </div>
+
+            <h2 className="text-lg font-semibold text-gray-800">
+              Tarjeta creada
+            </h2>
+
+            <p className="text-sm text-gray-500">
+              Tu tarjeta de{" "}
+              <span className="font-medium">
+                {createdType === "credit" ? "crédito" : "débito"}
+              </span>{" "}
+              está lista.
+            </p>
+
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full py-2 rounded-lg bg-primary text-white font-medium"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+
+          <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl p-6 space-y-4 text-center animate-fadeIn">
+
+            <div className="w-14 h-14 mx-auto rounded-full bg-red-100 flex items-center justify-center">
+              <span className="text-red-600 text-2xl">✕</span>
+            </div>
+
+            <h2 className="text-lg font-semibold text-gray-800">
+              Ocurrió un error
+            </h2>
+
+            <p className="text-sm text-gray-500">
+              No pudimos crear la tarjeta. Intentá nuevamente.
+            </p>
+
+            <button
+              onClick={() => setShowErrorModal(false)}
+              className="w-full py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
 
       <BottomNav />
     </div>

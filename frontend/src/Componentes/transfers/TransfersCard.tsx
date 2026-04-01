@@ -4,7 +4,7 @@ const TransferCard = () => {
 
       <p className="text-gray-500">Transferencias</p>
 
-      <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">
+      <button className="px-4 py-2 rounded-lg bg-linear-to-r from-purple-600 to-pink-500  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30">
         Nueva transferencia
       </button>
 
