@@ -55,7 +55,7 @@ const register = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await getUserById(req.userId);
+    const user = await authService.getUserById(req.userId);
     res.json(user);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -67,7 +67,7 @@ const updateEmail = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const updatedUser = await updateUserEmail(req.userId, email);
+    const updatedUser = await authService.updateUserEmail(req.userId, email);
 
     res.json({
       message: "Email actualizado correctamente",

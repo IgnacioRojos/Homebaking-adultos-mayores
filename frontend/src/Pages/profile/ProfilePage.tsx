@@ -6,14 +6,14 @@ import { api } from "../../Utils/api";
 const ProfilePage = () => {
   const [user, setUser] = useState<any>(null);
 
-  const getProfile = async () => {
+    const getProfile = async () => {
     try {
-      const res = await api.get("/users/me"); // o el endpoint que tengas
-      setUser(res.data);
+        const data = await api("/auth/me");
+        setUser(data);
     } catch (error) {
-      console.error("Error obteniendo perfil:", error);
+        console.error("Error obteniendo perfil:", error);
     }
-  };
+    };
 
   useEffect(() => {
     getProfile();
