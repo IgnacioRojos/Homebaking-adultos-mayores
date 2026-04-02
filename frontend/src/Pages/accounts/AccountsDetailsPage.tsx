@@ -198,7 +198,7 @@ const AccountDetailPage = () => {
           {!detail.isPrimary && (
             <button
               onClick={handleMakePrimary}
-              className="px-4 py-2 rounded-lg bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
+              className="px-4 py-2 rounded-full bg-linear-to-r from-purple-600 to-pink-500  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
             >
               Convertir en cuenta principal
             </button>
@@ -206,7 +206,7 @@ const AccountDetailPage = () => {
 
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 rounded-lg text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30 bg-red-500 hover:bg-red-600 transition"
+            className="px-4 py-2 rounded-full bg-linear-to-r from-purple-600 to-pink-500 text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
           >
             Eliminar cuenta
           </button>

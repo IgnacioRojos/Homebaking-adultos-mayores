@@ -110,7 +110,7 @@ const AccountsAlias = ({ account, refetch }: Props) => {
         </div>
 
         {copied && (
-          <p className="text-green-500 text-sm mt-1">
+          <p className="text-lime-400 text-sm mt-1">
             Copiado ✔
           </p>
         )}
@@ -162,7 +162,7 @@ const AccountsAlias = ({ account, refetch }: Props) => {
                   setNewAlias("");
                   setError("");
                 }}
-                className="px-4 py-2 rounded-lg bg-gray-200"
+                className="px-4 py-2 rounded-full bg-gray-200"
               >
                 Cancelar
               </button>
@@ -170,7 +170,7 @@ const AccountsAlias = ({ account, refetch }: Props) => {
               <button
                 onClick={handleEditAlias}
                 disabled={loading}
-                className="px-4 py-2  bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-xs font-semibold rounded-full border border-white/30"
+                className="px-4 py-2  bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold rounded-full border border-white/30"
               >
                 {loading ? "Guardando..." : "Guardar"}
               </button>

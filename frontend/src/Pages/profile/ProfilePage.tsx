@@ -30,38 +30,39 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <ButtomNavBar />
+  
+      <div className="bg-card p-4 rounded-2xl shadow space-y-4">
+        <ButtomNavBar/>
+        <p>
+          <span className="font-semibold">Nombre y Apellido:</span> {user.fullName}
+        </p>
+        <p>
+          <span className="font-semibold">Documento:</span> {user.dni}
+        </p>
+        <p>
+          <span className="font-semibold">Email:</span> {user.email}
+        </p>
 
-      <div className="p-4 space-y-4">
-        <h2 className="text-xl font-bold text-primary">Mi perfil</h2>
-
-        <div className="bg-card p-4 rounded-2xl shadow space-y-2">
-          <p><span className="font-semibold">Nombre y Apellido:</span> {user.fullName}</p>
-          <p><span className="font-semibold">Documento:</span> {user.dni}</p>
-          <p><span className="font-semibold">Email:</span> {user.email}</p>
-        </div>
-      </div>
-
-      <div>
+        {/* 👇 BOTÓN ABAJO DE LOS DATOS */}
         <button
           onClick={() => setShowModal(true)}
-          className="fixed bottom-20 right-4 bg-primary text-white px-4 py-2 rounded-full shadow-lg"
+          className="px-4 py-2  bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold rounded-full border border-white/30"
         >
           Editar Email
         </button>
+        {showModal && (
+          <EditEmailModal
+            currentEmail={user.email}
+            onClose={() => setShowModal(false)}
+            
+            onSuccess={handleUpdateSuccess}
+          />
+        )}
+        <BottomNav />
       </div>
-      {showModal && (
-      <EditEmailModal
-        currentEmail={user.email}
-        onClose={() => setShowModal(false)}
-        
-        onSuccess={handleUpdateSuccess}
-      />
-      )}
+    
 
-      <BottomNav />
-    </div>
+
   );
 };
 

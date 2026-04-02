@@ -103,7 +103,7 @@ const CardsPage = () => {
 
           <button
             onClick={() => setFilter("all")}
-            className={`flex-1 py-2 rounded-lg text-sm ${
+            className={`flex-1 py-2 rounded-full text-sm ${
               filter === "all"
                 ? "bg-primary text-white"
                 : "bg-main text-secondary-text"
@@ -114,7 +114,7 @@ const CardsPage = () => {
 
           <button
             onClick={() => setFilter("credit")}
-            className={`flex-1 py-2 rounded-lg text-sm ${
+            className={`flex-1 py-2 rounded-full text-sm ${
               filter === "credit"
                 ? "bg-primary text-white"
                 : "bg-main text-secondary-text"
@@ -125,7 +125,7 @@ const CardsPage = () => {
 
           <button
             onClick={() => setFilter("debit")}
-            className={`flex-1 py-2 rounded-lg text-sm ${
+            className={`flex-1 py-2 rounded-full text-sm ${
               filter === "debit"
                 ? "bg-primary text-white"
                 : "bg-main text-secondary-text"
@@ -165,14 +165,14 @@ const CardsPage = () => {
 
             <button
               onClick={() => handleRequestCard("credit")}
-              className="flex-1 py-2 rounded-lg bg-linear-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold border border-white/30 backdrop-blur-sm hover:opacity-90 transition"
+              className="flex-1 py-2 rounded-full bg-linear-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold border border-white/30 backdrop-blur-sm hover:opacity-90 transition"
             >
               + Crédito
             </button>
 
             <button
               onClick={() => handleRequestCard("debit")}
-              className="flex-1 py-2 rounded-lg bg-linear-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold border border-white/30 backdrop-blur-sm hover:opacity-90 transition"
+              className="flex-1 py-2 rounded-full bg-linear-to-r from-purple-600 to-pink-500 text-white text-sm font-semibold border border-white/30 backdrop-blur-sm hover:opacity-90 transition"
             >
               + Débito
             </button>
@@ -205,7 +205,7 @@ const CardsPage = () => {
 
             <button
               onClick={() => setShowSuccessModal(false)}
-              className="w-full py-2 rounded-lg bg-primary text-white font-medium"
+              className="w-full py-2 rounded-full bg-primary text-white font-medium"
             >
               Entendido
             </button>
@@ -231,7 +231,7 @@ const CardsPage = () => {
 
             <button
               onClick={() => setShowErrorModal(false)}
-              className="w-full py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition"
+              className="w-full py-2 rounded-full bg-red-500 text-white font-medium hover:bg-red-600 transition"
             >
               Entendido
             </button>

@@ -75,12 +75,11 @@ const updateEmail = async (req, res) => {
     const { email } = req.body;
 
     const updatedUser = await authService.updateUserEmail(req.user.id, email);
-
     res.json({
       message: "Email actualizado correctamente",
       user: updatedUser,
     });
-    console.log("USER ID:", req.user.id);
+
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

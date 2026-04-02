@@ -4,9 +4,11 @@ import DebitCardPreview from "../../Componentes/accounts/DebitCardPreview";
 import AliasCard from "../../Componentes/accounts/AccountsAlias";
 import TransferCard from "../../Componentes/transfers/TransfersCard";
 import { useDashboard } from "../../Hooks/useDashboard.ts";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
   const { account, cards, loading,refetch  } = useDashboard();
+  const navigate = useNavigate();
 
   const debitCard = cards?.find((c: any) => c.type === "debit" && c.status === "active");
   
@@ -22,6 +24,7 @@ const DashboardPage = () => {
             {account && (
               <AccountCard
                 account={account}
+                onClick={() => navigate(`/accounts/${account._id}`)}
               />
             )}
           </div>

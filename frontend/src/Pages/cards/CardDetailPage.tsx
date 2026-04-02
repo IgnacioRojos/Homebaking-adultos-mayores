@@ -253,7 +253,7 @@ const CardDetailPage = () => {
           {detail.type === "credit" && (
             <button
               onClick={handlePay}
-              className="px-4 py-2 rounded-lg bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
+              className="px-4 py-2  rounded-full bg-linear-to-r from-purple-600 to-pink-500 text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
             >
               Pagar tarjeta
             </button>
@@ -262,7 +262,7 @@ const CardDetailPage = () => {
           {detail.status !== "active" && (
             <button
               onClick={() => setShowEnableModal(true)}
-              className="px-4 py-2 rounded-lg bg-purple-600  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
+              className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-500 text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30  rounded-full"
             >
               Activar tarjeta
             </button>
@@ -270,7 +270,7 @@ const CardDetailPage = () => {
 
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="px-4 py-2 rounded-lg bg-red-500  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30"
+            className="px-4 py-2 bg-linear-to-r from-purple-600 to-pink-500  text-white disabled:opacity-50backdrop-blur-sm text-m font-semibold border border-white/30  rounded-full"
           >
             Dar de baja
           </button>
@@ -335,14 +335,14 @@ const CardDetailPage = () => {
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => setShowEnableModal(false)}
-                className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+                className="flex-1 py-2  border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition  rounded-full"
               >
                 Cancelar
               </button>
 
               <button
                 onClick={handleEnable}
-                className="flex-1 py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition disabled:opacity-50"
+                className="flex-1 py-2  bg-green-500 text-white font-medium hover:bg-green-600 transition disabled:opacity-50  rounded-full"
                 disabled={loadingEnable}
               >
                 {loadingEnable ? "Activando..." : "Activar"}
