@@ -92,10 +92,10 @@ const AccountsAlias = ({ account, refetch }: Props) => {
             {account.alias}
           </h2>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pl-2">
             <button
               onClick={handleCopy}
-              className="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/30"
+              className="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1 rounded-full border border-white/30 "
             >
               Copiar
             </button>

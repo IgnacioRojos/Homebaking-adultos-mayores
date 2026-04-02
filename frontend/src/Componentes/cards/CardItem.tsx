@@ -7,11 +7,11 @@ const CardItem = ({ card, onClick }: Props) => {
 
 
   return (
-    <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl p-6 shadow-md space-y-3">
+    <div className="bg-linear-to-br from-purple-500 to-indigo-500 text-white rounded-2xl flex justify-between p-7 shadow-md space-y-4" >
 
       {/* INFO */}
       <div>
-        <p className="font-semibold text-white">
+        <p className="font-semibold text-white order-2">
           Tarjeta **** {card.cardNumber.slice(-4)}
         </p>
 
@@ -28,7 +28,7 @@ const CardItem = ({ card, onClick }: Props) => {
       {/* BOTÓN */}
         <button
           onClick={onClick}
-          className=  "bg-white/20 backdrop-blur-sm text-white text-xl font-semibold px-3 py-1 rounded-full border border-white/30"
+          className=  "bg-white/20 backdrop-blur-sm text-white text-xl font-semibold px-7 py-4 rounded-full border border-white/30 order-1 h-16 "
         >
           Ver
         </button>
