@@ -93,9 +93,6 @@ const CardDetailPage = () => {
     }).format(value);
   };
 
-  const formatDate = (date: string) => {
-    return new Intl.DateTimeFormat("es-AR").format(new Date(date));
-  };
 
   const formatExpiry = (date: string) => {
     const d = new Date(date);

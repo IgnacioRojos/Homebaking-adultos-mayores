@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type ReactNode } from "react";
 import { api } from "../Utils/api";
 
 
 type CardDetail = {
+  cvv: ReactNode;
   number: string;
   type: "credit" | "debit";
   status: string;
@@ -53,7 +54,7 @@ export const useCardDetail = (_id: string | undefined) => {
   }, [fetchDetail]);
 
   // ===============================
-  // 🧠 DATOS DERIVADOS (CLAVE UX)
+  // DATOS DERIVADOS (CLAVE UX)
   // ===============================
 
   const hasDebt = (detail?.amountToPay ?? 0) > 0;
@@ -71,7 +72,7 @@ export const useCardDetail = (_id: string | undefined) => {
     error,
     refetch: fetchDetail,
 
-    // 🔥 derivados listos para UI
+    //derivados listos para UI
     hasDebt,
     hasBalance,
     isCardActive
