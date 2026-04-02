@@ -1,6 +1,7 @@
 const User = require("../models/Users");
 const bcrypt = require("bcryptjs");
 const generateToken = require("../utils/generateToken");
+const mongoose = require("mongoose");
 
 const login = async (dni, password) => {
   const user = await User.findOne({ dni });
@@ -67,12 +68,12 @@ const register = async ({ fullName, dni, email, password }) => {
 
 
 const getUserById = async (userId) => {
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(new mongoose.Types.ObjectId(userId)).select("-password");
 
   if (!user) {
     throw new Error("Usuario no encontrado");
   }
-
+  console.log("DECODED:", decoded);
   return user;
 };
 

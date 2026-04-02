@@ -14,6 +14,7 @@ const ProfilePage = () => {
         console.error("Error obteniendo perfil:", error);
     }
     };
+    console.log("data", user);
 
   useEffect(() => {
     getProfile();

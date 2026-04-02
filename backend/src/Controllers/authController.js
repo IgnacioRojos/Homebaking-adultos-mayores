@@ -1,4 +1,5 @@
 const authService = require("../Services/authService");
+const User = require("../models/Users");
 
 const login = async (req, res) => {
   try {
@@ -55,10 +56,16 @@ const register = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await authService.getUserById(req.userId);
+    const user = await User.findById(req.user.id); 
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
     res.json(user);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Error del servidor" });
   }
 };
 
