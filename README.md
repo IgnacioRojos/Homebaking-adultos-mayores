@@ -240,7 +240,7 @@ Muestra información completa de una tarjeta.
 
 ### Backend
 
-```bash
+bash
 cd backend
 npm install
 npm run dev
