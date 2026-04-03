@@ -10,7 +10,7 @@ const app = express();
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
-  "https://homebankingadultosmayores.netlify.app/"
+  "https://homebankingadultosmayores.netlify.app"
 ];
 
 app.use(
