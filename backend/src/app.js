@@ -13,6 +13,8 @@ const allowedOrigins = [
   "https://homebankingadultosmayores.netlify.app"
 ];
 
+console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+
 app.use(
   cors({
     origin: function (origin, callback) {
