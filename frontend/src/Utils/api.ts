@@ -6,7 +6,7 @@ export const api = async (
 ) => {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(`${API_URL}/api${endpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
